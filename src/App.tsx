@@ -6,6 +6,7 @@ import Placeholder from './pages/Placeholder'
 import ProdutosPage from './features/produtos/ProdutosPage'
 import ParceirosPage from './features/parceiros/ParceirosPage'
 import ConsignacoesPage from './features/consignacoes/ConsignacoesPage'
+import AcertosPage from './features/acertos/AcertosPage'
 
 export default function App() {
   return (
@@ -19,7 +20,7 @@ export default function App() {
           <Route path="/produtos" element={<ProdutosPage />} />
           <Route path="/parceiros" element={<ParceirosPage />} />
           <Route path="/consignacoes" element={<ConsignacoesPage />} />
-          <Route path="/acertos" element={<Placeholder title="Acertos" />} />
+          <Route path="/acertos" element={<AcertosPage />} />
           <Route path="/estoque" element={<Placeholder title="Estoque" />} />
         </Route>
       </Route>

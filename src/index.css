@@ -1058,3 +1058,213 @@ a {
     flex: 1 1 auto;
   }
 }
+
+/* ---------- Acerto: fluxo full-screen (balcão) ---------- */
+.drawer--full {
+  max-width: 100%;
+}
+
+.acerto-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.acerto-linhas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.acerto-linha {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.acerto-linha--erro {
+  border-color: var(--danger);
+}
+
+.al-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.al-nome {
+  font-weight: 600;
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.al-saldo {
+  font-size: 12px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.al-saldo strong {
+  color: var(--text);
+  font-size: 15px;
+}
+
+.al-inputs {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.al-campo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.al-campo span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.al-campo input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  color: var(--text);
+  font-size: 18px;
+  text-align: center;
+  outline: none;
+}
+
+.al-campo input:focus {
+  border-color: var(--primary);
+}
+
+.al-vendida {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  text-align: center;
+}
+
+.al-vendida span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.al-vendida strong {
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.al-neg {
+  color: var(--danger);
+}
+
+.al-foot {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Resumo fixo no rodapé do drawer */
+.acerto-summary {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.resumo-linhas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.resumo-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.resumo-item strong {
+  color: var(--text);
+}
+
+.resumo-repasse {
+  font-size: 17px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.resumo-repasse span {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.resumo-repasse strong {
+  color: #4ade80;
+  font-weight: 800;
+}
+
+.acerto-summary-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.acerto-summary-actions .btn-primary {
+  flex: 1;
+  padding: 13px;
+  font-size: 16px;
+}
+
+/* Valores no card da lista de acertos */
+.acerto-valores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+
+.acerto-valores strong {
+  color: var(--text);
+}
+
+.acerto-repasse strong {
+  color: #4ade80;
+}
+
+.cons-actions--end {
+  justify-content: flex-end;
+}
+
+@media (min-width: 768px) {
+  .drawer--full {
+    max-width: 640px;
+  }
+}
