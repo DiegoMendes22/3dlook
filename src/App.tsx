@@ -3,6 +3,7 @@ import ProtectedRoute from './auth/ProtectedRoute'
 import AppLayout from './components/AppLayout'
 import Login from './pages/Login'
 import Placeholder from './pages/Placeholder'
+import ProdutosPage from './features/produtos/ProdutosPage'
 
 export default function App() {
   return (
@@ -13,7 +14,7 @@ export default function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route index element={<Navigate to="/produtos" replace />} />
-          <Route path="/produtos" element={<Placeholder title="Produtos" />} />
+          <Route path="/produtos" element={<ProdutosPage />} />
           <Route path="/parceiros" element={<Placeholder title="Parceiros" />} />
           <Route
             path="/consignacoes"
