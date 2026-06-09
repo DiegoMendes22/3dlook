@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Placeholder from './pages/Placeholder'
 import ProdutosPage from './features/produtos/ProdutosPage'
 import ParceirosPage from './features/parceiros/ParceirosPage'
+import ConsignacoesPage from './features/consignacoes/ConsignacoesPage'
 
 export default function App() {
   return (
@@ -17,10 +18,7 @@ export default function App() {
           <Route index element={<Navigate to="/produtos" replace />} />
           <Route path="/produtos" element={<ProdutosPage />} />
           <Route path="/parceiros" element={<ParceirosPage />} />
-          <Route
-            path="/consignacoes"
-            element={<Placeholder title="Consignações" />}
-          />
+          <Route path="/consignacoes" element={<ConsignacoesPage />} />
           <Route path="/acertos" element={<Placeholder title="Acertos" />} />
           <Route path="/estoque" element={<Placeholder title="Estoque" />} />
         </Route>

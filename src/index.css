@@ -816,3 +816,245 @@ a {
     flex: initial;
   }
 }
+
+/* ---------- Selects (formulário e filtros) ---------- */
+.field select {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-size: 16px;
+  font-family: inherit;
+  outline: none;
+}
+
+.field select:focus {
+  border-color: var(--primary);
+}
+
+.filtros select,
+.item-row select,
+.item-row input {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  min-width: 0;
+}
+
+.filtros select:focus,
+.item-row select:focus,
+.item-row input:focus {
+  border-color: var(--primary);
+}
+
+.btn-sm {
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+/* ---------- Consignações: filtros ---------- */
+.filtros {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.filtros select {
+  flex: 1;
+}
+
+/* ---------- Consignações: drawer de itens ---------- */
+.drawer--wide {
+  max-width: 560px;
+}
+
+.itens-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--bg);
+}
+
+.itens-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.itens-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.item-produto {
+  flex: 1 1 100%;
+}
+
+.item-qtd {
+  flex: 0 0 70px;
+  text-align: center;
+}
+
+.item-preco {
+  flex: 1 1 100px;
+}
+
+.item-remove {
+  flex: 0 0 auto;
+  font-size: 14px;
+}
+
+.itens-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.itens-total strong {
+  font-size: 16px;
+  color: var(--text);
+}
+
+/* ---------- Consignações: lista ---------- */
+.cons-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cons-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cons-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.cons-parceiro {
+  margin: 0 0 2px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.cons-data {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.cons-itens {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cons-itens li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.ci-nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ci-calc {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.ci-vazio {
+  color: var(--text-muted);
+}
+
+.cons-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cons-total {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.cons-total strong {
+  color: var(--text);
+  font-size: 15px;
+}
+
+.cons-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Badges de status */
+.badge--rascunho {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.12);
+  border-color: rgba(251, 191, 36, 0.35);
+}
+
+.badge--enviada {
+  color: #60a5fa;
+  background: rgba(96, 165, 250, 0.12);
+  border-color: rgba(96, 165, 250, 0.35);
+}
+
+.badge--encerrada {
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+@media (min-width: 768px) {
+  .item-produto {
+    flex: 1 1 auto;
+  }
+}
