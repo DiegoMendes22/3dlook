@@ -1268,3 +1268,75 @@ a {
     max-width: 640px;
   }
 }
+
+/* ---------- Estoque ---------- */
+.drawer-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.estoque-grupo {
+  margin-bottom: 18px;
+}
+
+.estoque-grupo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 2px 8px;
+}
+
+.estoque-local {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.estoque-local--oficina {
+  color: var(--primary);
+}
+
+.estoque-local-total {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.estoque-itens {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.estoque-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.estoque-produto {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.estoque-saldo {
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 16px;
+  min-width: 32px;
+  text-align: right;
+}
+
+.estoque-saldo--neg {
+  color: var(--danger);
+}
