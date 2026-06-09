@@ -33,7 +33,7 @@ export default function Login() {
   return (
     <div className="centered-screen">
       <form className="login-card" onSubmit={handleSubmit}>
-        <Logo size={40} className="login-brand" />
+        <Logo size={56} className="login-brand" />
         <p className="login-subtitle">Entre com seu e-mail e senha</p>
 
         <label className="field">

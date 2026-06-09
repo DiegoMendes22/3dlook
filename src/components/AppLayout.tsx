@@ -10,7 +10,7 @@ export default function AppLayout() {
     <div className="app-shell">
       {/* Menu lateral (desktop/tablet) */}
       <aside className="sidebar">
-        <Logo size={26} className="sidebar-brand" />
+        <Logo size={46} className="sidebar-brand" />
 
         <nav className="sidebar-nav">
           {navItems.map((item) => (
@@ -40,7 +40,7 @@ export default function AppLayout() {
       {/* Conteúdo */}
       <div className="content-area">
         <header className="topbar">
-          <Logo size={20} className="topbar-brand" />
+          <Logo size={34} className="topbar-brand" />
           <button
             type="button"
             className="btn-ghost topbar-signout"
