@@ -41,6 +41,36 @@ a {
   text-decoration: none;
 }
 
+/* ---------- Logo (wordmark 3DLookStore) ---------- */
+.logo {
+  display: inline-block;
+  position: relative;
+  line-height: 1;
+  color: var(--text);
+  padding-bottom: 0.42em; /* espaço para o swoosh */
+  user-select: none;
+}
+
+.logo-word {
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.logo-word-bold {
+  font-weight: 800;
+}
+
+.logo-swoosh {
+  position: absolute;
+  left: 8%;
+  right: -6%;
+  bottom: 0;
+  width: 98%;
+  height: 0.5em;
+  overflow: visible;
+}
+
 /* ---------- Telas centradas (login / loading) ---------- */
 .centered-screen {
   min-height: 100dvh;

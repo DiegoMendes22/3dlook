@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { navItems } from '../navigation'
+import Logo from './Logo'
 
 export default function AppLayout() {
   const { user, signOut } = useAuth()
@@ -9,7 +10,7 @@ export default function AppLayout() {
     <div className="app-shell">
       {/* Menu lateral (desktop/tablet) */}
       <aside className="sidebar">
-        <div className="sidebar-brand">3dlook</div>
+        <Logo size={26} className="sidebar-brand" />
 
         <nav className="sidebar-nav">
           {navItems.map((item) => (
@@ -39,7 +40,7 @@ export default function AppLayout() {
       {/* Conteúdo */}
       <div className="content-area">
         <header className="topbar">
-          <span className="topbar-brand">3dlook</span>
+          <Logo size={20} className="topbar-brand" />
           <button
             type="button"
             className="btn-ghost topbar-signout"

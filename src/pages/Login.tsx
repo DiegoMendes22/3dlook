@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import Logo from '../components/Logo'
 
 interface LocationState {
   from?: { pathname: string }
@@ -32,7 +33,7 @@ export default function Login() {
   return (
     <div className="centered-screen">
       <form className="login-card" onSubmit={handleSubmit}>
-        <div className="login-brand">3dlook</div>
+        <Logo size={40} className="login-brand" />
         <p className="login-subtitle">Entre com seu e-mail e senha</p>
 
         <label className="field">
