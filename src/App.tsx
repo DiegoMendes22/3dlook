@@ -4,6 +4,7 @@ import AppLayout from './components/AppLayout'
 import Login from './pages/Login'
 import Placeholder from './pages/Placeholder'
 import ProdutosPage from './features/produtos/ProdutosPage'
+import ParceirosPage from './features/parceiros/ParceirosPage'
 
 export default function App() {
   return (
@@ -15,7 +16,7 @@ export default function App() {
         <Route element={<AppLayout />}>
           <Route index element={<Navigate to="/produtos" replace />} />
           <Route path="/produtos" element={<ProdutosPage />} />
-          <Route path="/parceiros" element={<Placeholder title="Parceiros" />} />
+          <Route path="/parceiros" element={<ParceirosPage />} />
           <Route
             path="/consignacoes"
             element={<Placeholder title="Consignações" />}

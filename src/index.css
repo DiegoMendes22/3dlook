@@ -702,6 +702,83 @@ a {
   gap: 8px;
 }
 
+/* ---------- Parceiros: lista (mesmo padrão, sem miniatura) ---------- */
+.parceiro-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.parceiro-card {
+  display: grid;
+  grid-template-areas:
+    'info'
+    'actions';
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+
+.parceiro-info {
+  grid-area: info;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.parceiro-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.parceiro-nome {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.parceiro-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.parceiro-comissao {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.parceiro-comissao strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.parceiro-actions {
+  grid-area: actions;
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.parceiro-actions .btn-ghost {
+  flex: 1;
+}
+
 /* ---------- Desktop: lista em cartões mais largos ---------- */
 @media (min-width: 768px) {
   .produto-card {
@@ -721,6 +798,21 @@ a {
   }
 
   .produto-actions .btn-ghost {
+    flex: initial;
+  }
+
+  .parceiro-card {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: 'info actions';
+    align-items: center;
+  }
+
+  .parceiro-actions {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .parceiro-actions .btn-ghost {
     flex: initial;
   }
 }
