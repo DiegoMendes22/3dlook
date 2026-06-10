@@ -4,6 +4,7 @@ import AppLayout from './components/AppLayout'
 import Login from './pages/Login'
 import ProdutosPage from './features/produtos/ProdutosPage'
 import ParceirosPage from './features/parceiros/ParceirosPage'
+import ClientesPage from './features/clientes/ClientesPage'
 import ConsignacoesPage from './features/consignacoes/ConsignacoesPage'
 import AcertosPage from './features/acertos/AcertosPage'
 import EstoquePage from './features/estoque/EstoquePage'
@@ -19,6 +20,7 @@ export default function App() {
           <Route index element={<Navigate to="/produtos" replace />} />
           <Route path="/produtos" element={<ProdutosPage />} />
           <Route path="/parceiros" element={<ParceirosPage />} />
+          <Route path="/clientes" element={<ClientesPage />} />
           <Route path="/consignacoes" element={<ConsignacoesPage />} />
           <Route path="/acertos" element={<AcertosPage />} />
           <Route path="/estoque" element={<EstoquePage />} />
