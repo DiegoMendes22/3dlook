@@ -1471,3 +1471,45 @@ a {
 .topbar-gear.active {
   color: var(--text);
 }
+
+/* ---------- Orçamentos ---------- */
+.badge--aprovado {
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.12);
+  border-color: rgba(74, 222, 128, 0.35);
+}
+
+.badge--recusado {
+  color: var(--danger);
+  background: rgba(255, 92, 92, 0.12);
+  border-color: rgba(255, 92, 92, 0.35);
+}
+
+.badge--expirado {
+  color: #fb923c;
+  background: rgba(251, 146, 60, 0.14);
+  border-color: rgba(251, 146, 60, 0.4);
+}
+
+.orc-cliente {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.orc-condicoes {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Menu inferior com mais itens: aperta um pouco para caberem */
+@media (max-width: 767px) {
+  .bottom-link {
+    padding: 8px 1px;
+  }
+
+  .bottom-label {
+    font-size: 10px;
+  }
+}
