@@ -1409,3 +1409,65 @@ a {
 .estoque-saldo--neg {
   color: var(--danger);
 }
+
+/* ---------- Minha empresa ---------- */
+.page-subtitle {
+  margin: -8px 0 18px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.empresa-form {
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.logo-preview {
+  width: 140px;
+  height: 88px;
+}
+
+.logo-preview img {
+  object-fit: contain;
+}
+
+.form-success {
+  background: rgba(74, 222, 128, 0.12);
+  border: 1px solid rgba(74, 222, 128, 0.4);
+  color: #4ade80;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.empresa-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.empresa-actions .btn-primary {
+  padding: 11px 24px;
+  font-size: 15px;
+}
+
+/* Acesso "Minha empresa" no topo (mobile) */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.topbar-gear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.topbar-gear:hover,
+.topbar-gear.active {
+  color: var(--text);
+}

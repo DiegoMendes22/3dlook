@@ -8,6 +8,7 @@ import ClientesPage from './features/clientes/ClientesPage'
 import ConsignacoesPage from './features/consignacoes/ConsignacoesPage'
 import AcertosPage from './features/acertos/AcertosPage'
 import EstoquePage from './features/estoque/EstoquePage'
+import EmpresaPage from './features/empresa/EmpresaPage'
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/consignacoes" element={<ConsignacoesPage />} />
           <Route path="/acertos" element={<AcertosPage />} />
           <Route path="/estoque" element={<EstoquePage />} />
+          <Route path="/empresa" element={<EmpresaPage />} />
         </Route>
       </Route>
 
