@@ -11,6 +11,16 @@ export async function listClientes(): Promise<Cliente[]> {
   return data ?? []
 }
 
+export async function getCliente(id: string): Promise<Cliente> {
+  const { data, error } = await supabase
+    .from('clientes')
+    .select('*')
+    .eq('id', id)
+    .single()
+  if (error) throw error
+  return data
+}
+
 export async function createCliente(input: ClienteInput): Promise<Cliente> {
   const { data, error } = await supabase
     .from('clientes')

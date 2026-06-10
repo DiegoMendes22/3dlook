@@ -7,6 +7,7 @@ import {
 import type { Orcamento, OrcamentoStatus } from './types'
 import { STATUS_LABEL } from './types'
 import NovoOrcamentoModal from './NovoOrcamentoModal'
+import OrcamentoDocModal from './OrcamentoDocModal'
 import { brl, dataBR, hojeISO } from '../../lib/format'
 
 const statusClass: Record<OrcamentoStatus, string> = {
@@ -24,6 +25,7 @@ export default function OrcamentosPage() {
   const [fStatus, setFStatus] = useState<OrcamentoStatus | ''>('')
 
   const [modalOpen, setModalOpen] = useState(false)
+  const [detalhe, setDetalhe] = useState<Orcamento | null>(null)
   const [mutando, setMutando] = useState<string | null>(null)
 
   const hoje = hojeISO()
@@ -131,7 +133,12 @@ export default function OrcamentosPage() {
           {filtrados.map((o) => {
             const ef = efetivo(o)
             return (
-              <li key={o.id} className="cons-card">
+              <li
+                key={o.id}
+                className="cons-card cons-card--click"
+                onClick={() => setDetalhe(o)}
+                title="Ver / gerar PDF"
+              >
                 <div className="cons-top">
                   <div>
                     <h3 className="cons-parceiro">
@@ -171,14 +178,20 @@ export default function OrcamentosPage() {
                         <button
                           type="button"
                           className="btn-ghost btn-danger-ghost btn-sm"
-                          onClick={() => excluir(o)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            excluir(o)
+                          }}
                         >
                           Excluir
                         </button>
                         <button
                           type="button"
                           className="btn-primary btn-sm"
-                          onClick={() => mudarStatus(o, 'enviado')}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            mudarStatus(o, 'enviado')
+                          }}
                           disabled={mutando === o.id}
                         >
                           Marcar enviado
@@ -190,7 +203,10 @@ export default function OrcamentosPage() {
                         <button
                           type="button"
                           className="btn-ghost btn-danger-ghost btn-sm"
-                          onClick={() => mudarStatus(o, 'recusado', 'Marcar este orçamento como recusado?')}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            mudarStatus(o, 'recusado', 'Marcar este orçamento como recusado?')
+                          }}
                           disabled={mutando === o.id}
                         >
                           Recusar
@@ -198,7 +214,10 @@ export default function OrcamentosPage() {
                         <button
                           type="button"
                           className="btn-primary btn-sm"
-                          onClick={() => mudarStatus(o, 'aprovado')}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            mudarStatus(o, 'aprovado')
+                          }}
                           disabled={mutando === o.id}
                         >
                           Aprovar
@@ -215,6 +234,10 @@ export default function OrcamentosPage() {
 
       {modalOpen && (
         <NovoOrcamentoModal onClose={() => setModalOpen(false)} onSaved={aoSalvar} />
+      )}
+
+      {detalhe && (
+        <OrcamentoDocModal orcamento={detalhe} onClose={() => setDetalhe(null)} />
       )}
     </section>
   )
