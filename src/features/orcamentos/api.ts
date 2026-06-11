@@ -5,7 +5,7 @@ const SELECT = `
   id, numero, cliente_id, data_emissao, validade, status, condicoes, observacao, criado_em,
   cliente:clientes(nome),
   itens:orcamento_itens(
-    id, produto_id, quantidade, preco_unitario,
+    id, produto_id, quantidade, preco_unitario, observacao,
     produto:produtos(nome, sku)
   )
 `

@@ -9,6 +9,7 @@ export interface OrcamentoItemInput {
   produto_id: string
   quantidade: number
   preco_unitario: number
+  observacao: string | null
 }
 
 export interface OrcamentoItem {
@@ -16,6 +17,7 @@ export interface OrcamentoItem {
   produto_id: string
   quantidade: number
   preco_unitario: number
+  observacao: string | null
   produto: { nome: string; sku: string | null } | null
 }
 

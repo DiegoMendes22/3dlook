@@ -17,6 +17,7 @@ interface ItemRow {
   produto_id: string
   quantidade: string
   preco_unitario: string
+  observacao: string
 }
 
 const novaLinha = (): ItemRow => ({
@@ -24,6 +25,7 @@ const novaLinha = (): ItemRow => ({
   produto_id: '',
   quantidade: '1',
   preco_unitario: '',
+  observacao: '',
 })
 
 export default function NovoOrcamentoModal({ onClose, onSaved }: Props) {
@@ -78,7 +80,11 @@ export default function NovoOrcamentoModal({ onClose, onSaved }: Props) {
     )
   }
 
-  function alterarCampo(key: string, campo: 'quantidade' | 'preco_unitario', valor: string) {
+  function alterarCampo(
+    key: string,
+    campo: 'quantidade' | 'preco_unitario' | 'observacao',
+    valor: string,
+  ) {
     setItens((rows) => rows.map((r) => (r.key === key ? { ...r, [campo]: valor } : r)))
   }
 
@@ -104,6 +110,7 @@ export default function NovoOrcamentoModal({ onClose, onSaved }: Props) {
         produto_id: r.produto_id,
         quantidade: Math.trunc(Number(r.quantidade)),
         preco_unitario: Number(r.preco_unitario.replace(',', '.')) || 0,
+        observacao: r.observacao.trim() || null,
       }))
 
     if (itensValidos.length === 0) {
@@ -264,6 +271,13 @@ export default function NovoOrcamentoModal({ onClose, onSaved }: Props) {
                       >
                         ✕
                       </button>
+                      <input
+                        className="item-obs"
+                        value={r.observacao}
+                        onChange={(e) => alterarCampo(r.key, 'observacao', e.target.value)}
+                        placeholder="Observação do item (opcional)"
+                        aria-label="Observação do item"
+                      />
                     </li>
                   ))}
                 </ul>

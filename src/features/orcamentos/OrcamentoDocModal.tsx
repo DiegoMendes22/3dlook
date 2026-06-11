@@ -197,6 +197,7 @@ export default function OrcamentoDocModal({ orcamento, onClose }: Props) {
                     <td>
                       {i.produto?.nome ?? 'Produto'}
                       {i.produto?.sku && <span className="doc-sku"> ({i.produto.sku})</span>}
+                      {i.observacao && <div className="doc-item-obs">{i.observacao}</div>}
                     </td>
                     <td className="num">{i.quantidade}</td>
                     <td className="num">{brl(i.preco_unitario)}</td>

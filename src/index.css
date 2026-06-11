@@ -1001,6 +1001,11 @@ a {
   font-size: 14px;
 }
 
+.item-obs {
+  flex: 1 1 100%;
+  font-size: 13px !important;
+}
+
 .itens-total {
   display: flex;
   justify-content: space-between;
@@ -1692,6 +1697,13 @@ a {
 
 .doc-sku {
   color: #6b7280;
+}
+
+.doc-item-obs {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #6b7280;
+  font-style: italic;
 }
 
 .doc-secao {
