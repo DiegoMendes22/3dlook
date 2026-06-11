@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { navItems } from '../navigation'
 import Logo from './Logo'
@@ -22,6 +23,14 @@ const gearIcon = (
 
 export default function AppLayout() {
   const { user, signOut } = useAuth()
+  const location = useLocation()
+  const bottomNavRef = useRef<HTMLElement>(null)
+
+  // Mantém o item ativo visível no menu inferior rolável.
+  useEffect(() => {
+    const ativo = bottomNavRef.current?.querySelector('.bottom-link--active')
+    ativo?.scrollIntoView({ block: 'nearest', inline: 'center' })
+  }, [location.pathname])
 
   return (
     <div className="app-shell">
@@ -91,7 +100,7 @@ export default function AppLayout() {
       </div>
 
       {/* Menu inferior (mobile) */}
-      <nav className="bottom-nav">
+      <nav className="bottom-nav" ref={bottomNavRef}>
         {navItems.map((item) => (
           <NavLink
             key={item.to}

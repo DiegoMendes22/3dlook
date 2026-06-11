@@ -70,6 +70,28 @@ export const navItems: NavItem[] = [
     ),
   },
   {
+    to: '/pedidos',
+    label: 'Pedidos',
+    icon: icon(
+      <>
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+        <path d="M3 6h18" />
+        <path d="M16 10a4 4 0 0 1-8 0" />
+      </>,
+    ),
+  },
+  {
+    to: '/contas-receber',
+    label: 'A receber',
+    icon: icon(
+      <>
+        <rect x="2" y="6" width="20" height="12" rx="2" />
+        <circle cx="12" cy="12" r="2" />
+        <path d="M6 12h.01M18 12h.01" />
+      </>,
+    ),
+  },
+  {
     to: '/consignacoes',
     label: 'Consignações',
     icon: icon(

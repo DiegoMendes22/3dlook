@@ -70,6 +70,15 @@ export async function updateStatusOrcamento(
   if (error) throw error
 }
 
+/** Aprova o orçamento e gera um pedido (rascunho) a partir dele. */
+export async function aprovarOrcamentoEmPedido(id: string): Promise<string> {
+  const { data, error } = await supabase.rpc('aprovar_orcamento_em_pedido', {
+    p_orcamento_id: id,
+  })
+  if (error) throw error
+  return data as string
+}
+
 export async function deleteOrcamento(id: string): Promise<void> {
   await supabase.from('orcamento_itens').delete().eq('orcamento_id', id)
   const { error } = await supabase.from('orcamentos').delete().eq('id', id)

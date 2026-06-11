@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
+  aprovarOrcamentoEmPedido,
   deleteOrcamento,
   listOrcamentos,
   updateStatusOrcamento,
@@ -66,6 +67,20 @@ export default function OrcamentosPage() {
       await carregar()
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Erro ao atualizar o status.')
+    } finally {
+      setMutando(null)
+    }
+  }
+
+  async function aprovarEGerarPedido(o: Orcamento) {
+    if (!confirm('Aprovar o orçamento e gerar um pedido a partir dele?')) return
+    setMutando(o.id)
+    try {
+      await aprovarOrcamentoEmPedido(o.id)
+      await carregar()
+      alert('Orçamento aprovado. Um pedido (rascunho) foi gerado na tela de Pedidos.')
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Erro ao aprovar o orçamento.')
     } finally {
       setMutando(null)
     }
@@ -216,11 +231,11 @@ export default function OrcamentosPage() {
                           className="btn-primary btn-sm"
                           onClick={(e) => {
                             e.stopPropagation()
-                            mudarStatus(o, 'aprovado')
+                            aprovarEGerarPedido(o)
                           }}
                           disabled={mutando === o.id}
                         >
-                          Aprovar
+                          Aprovar e gerar pedido
                         </button>
                       </>
                     )}

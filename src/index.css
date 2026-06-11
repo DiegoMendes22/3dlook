@@ -245,10 +245,17 @@ a {
   border-top: 1px solid var(--border);
   padding-bottom: env(safe-area-inset-bottom);
   z-index: 10;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.bottom-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .bottom-link {
-  flex: 1;
+  flex: 1 0 auto;
+  min-width: 62px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1739,4 +1746,212 @@ a {
     size: A4;
     margin: 14mm;
   }
+}
+
+/* ---------- Pedido: detalhe / financeiro ---------- */
+.ped-status {
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+.ped-cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ped-cliente {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.ped-data {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.ped-itens {
+  margin: 0;
+}
+
+.fin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.fin-item {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fin-item span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.fin-item strong {
+  font-size: 17px;
+}
+
+.fin-deve {
+  color: var(--danger);
+}
+
+.fin-ok {
+  color: #4ade80;
+}
+
+.fin-situacao {
+  justify-content: center;
+}
+
+.fin-situacao .badge {
+  align-self: flex-start;
+}
+
+.ped-pagamentos {
+  margin-top: 4px;
+}
+
+.pag-list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pag-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.pag-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.pag-info strong {
+  font-size: 15px;
+}
+
+.pag-info span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.pag-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.ped-saldo {
+  color: var(--danger);
+}
+
+.ped-rascunho-hint {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ---------- Contas a receber ---------- */
+.cr-total-geral {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.cr-total-geral span {
+  color: var(--text-muted);
+}
+
+.cr-total-geral strong {
+  font-size: 20px;
+  color: var(--danger);
+}
+
+.cr-grupo {
+  margin-bottom: 14px;
+}
+
+.cr-grupo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 2px 8px;
+}
+
+.cr-cliente {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.cr-saldo {
+  font-size: 15px;
+}
+
+.cr-pedidos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cr-pedido {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.cr-pedido-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.cr-numero {
+  font-weight: 600;
+}
+
+.cr-data {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.cr-pedido-valores {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cr-pedido-saldo {
+  font-weight: 700;
 }
