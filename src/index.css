@@ -2148,3 +2148,132 @@ a {
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
+
+/* ---------- Pedidos: quadro Kanban ---------- */
+.kanban {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  align-items: flex-start;
+}
+
+.kanban-col {
+  flex: 1 0 240px;
+  min-width: 240px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+}
+
+.kanban-col-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.kanban-col-titulo {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.kanban-col-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 1px 8px;
+  min-width: 22px;
+  text-align: center;
+}
+
+.kanban-col-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 120px;
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+.kanban-col-body--over {
+  background: rgba(79, 124, 255, 0.08);
+  outline: 2px dashed var(--primary);
+  outline-offset: -4px;
+}
+
+.kanban-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  cursor: grab;
+  user-select: none;
+}
+
+.kanban-card:active {
+  cursor: grabbing;
+}
+
+.kanban-card--overlay {
+  cursor: grabbing;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+.kanban-card-numero {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.kanban-card-cliente {
+  font-size: 13px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+.kanban-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.kanban-card-total {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.kanban-vazio {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 14px 0;
+  font-size: 13px;
+}
+
+/* Badge do status "Entregue" */
+.badge--entregue {
+  color: #22d3ee;
+  background: rgba(34, 211, 238, 0.12);
+  border-color: rgba(34, 211, 238, 0.35);
+}
+
+/* Metadados no modal do pedido */
+.ped-meta-linhas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.ped-meta-rotulo {
+  color: var(--text-muted);
+}

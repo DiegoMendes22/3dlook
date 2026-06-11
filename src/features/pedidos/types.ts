@@ -1,4 +1,10 @@
-export type PedidoStatus = 'rascunho' | 'confirmado' | 'entregue' | 'cancelado'
+export type PedidoStatus =
+  | 'orcamento_aprovado'
+  | 'em_producao'
+  | 'entregue'
+  | 'concluido'
+  | 'cancelado'
+
 export type SituacaoFinanceira = 'aberto' | 'parcial' | 'pago'
 
 export interface PedidoItem {
@@ -29,7 +35,11 @@ export interface Pedido {
   observacao: string | null
   criado_em: string
   cliente: { nome: string } | null
+  orcamento: { numero: string | null } | null
   itens: PedidoItem[]
+  /** Total vindo de v_pedido_valor. */
+  total: number
+  /** Resumo financeiro (apenas entregue/concluído). */
   financeiro: Financeiro | null
 }
 
@@ -50,19 +60,6 @@ export interface PagamentoInput {
   observacao: string | null
 }
 
-export const STATUS_LABEL: Record<PedidoStatus, string> = {
-  rascunho: 'Rascunho',
-  confirmado: 'Confirmado',
-  entregue: 'Entregue',
-  cancelado: 'Cancelado',
-}
-
-export const SITUACAO_LABEL: Record<SituacaoFinanceira, string> = {
-  aberto: 'Em aberto',
-  parcial: 'Parcial',
-  pago: 'Pago',
-}
-
 export interface ContaReceber {
   pedido_id: string
   numero: string | null
@@ -73,6 +70,28 @@ export interface ContaReceber {
   total_pago: number
   saldo_devedor: number
   situacao: SituacaoFinanceira
+}
+
+/** Colunas do quadro (rótulo visível → status no banco), na ordem. */
+export const COLUNAS: { status: PedidoStatus; label: string }[] = [
+  { status: 'orcamento_aprovado', label: 'Orçamento Aprovado' },
+  { status: 'em_producao', label: 'Em produção' },
+  { status: 'entregue', label: 'Entregue' },
+  { status: 'concluido', label: 'Concluído' },
+]
+
+export const STATUS_LABEL: Record<PedidoStatus, string> = {
+  orcamento_aprovado: 'Orçamento Aprovado',
+  em_producao: 'Em produção',
+  entregue: 'Entregue',
+  concluido: 'Concluído',
+  cancelado: 'Cancelado',
+}
+
+export const SITUACAO_LABEL: Record<SituacaoFinanceira, string> = {
+  aberto: 'Em aberto',
+  parcial: 'Parcial',
+  pago: 'Pago',
 }
 
 export const FORMAS_PAGAMENTO = [

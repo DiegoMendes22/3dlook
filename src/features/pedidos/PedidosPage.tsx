@@ -1,26 +1,118 @@
 import { useEffect, useMemo, useState } from 'react'
-import { listPedidos } from './api'
-import type { Pedido, PedidoStatus } from './types'
-import { STATUS_LABEL } from './types'
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  TouchSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from '@dnd-kit/core'
+import { listPedidos, updateStatusPedido } from './api'
+import type { Pedido, PedidoStatus, SituacaoFinanceira } from './types'
+import { COLUNAS, SITUACAO_LABEL } from './types'
+import { listClientes } from '../clientes/api'
+import type { Cliente } from '../clientes/types'
 import PedidoDetailModal from './PedidoDetailModal'
-import { brl, dataBR } from '../../lib/format'
+import { brl } from '../../lib/format'
 
-const statusClass: Record<PedidoStatus, string> = {
-  rascunho: 'badge badge--rascunho',
-  confirmado: 'badge badge--enviada',
-  entregue: 'badge badge--aprovado',
-  cancelado: 'badge badge--off',
+const situacaoClass: Record<SituacaoFinanceira, string> = {
+  aberto: 'badge badge--recusado',
+  parcial: 'badge badge--rascunho',
+  pago: 'badge badge--aprovado',
+}
+
+function CardConteudo({ pedido }: { pedido: Pedido }) {
+  return (
+    <>
+      <div className="kanban-card-numero">{pedido.numero}</div>
+      <div className="kanban-card-cliente">{pedido.cliente?.nome ?? '—'}</div>
+      <div className="kanban-card-foot">
+        <span className="kanban-card-total">{brl(pedido.total)}</span>
+        {pedido.status === 'entregue' && pedido.financeiro && (
+          <span className={situacaoClass[pedido.financeiro.situacao]}>
+            {SITUACAO_LABEL[pedido.financeiro.situacao]}
+          </span>
+        )}
+      </div>
+    </>
+  )
+}
+
+function KanbanCard({
+  pedido,
+  onAbrir,
+}: {
+  pedido: Pedido
+  onAbrir: (p: Pedido) => void
+}) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: pedido.id,
+  })
+  return (
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      className="kanban-card"
+      style={isDragging ? { opacity: 0.4 } : undefined}
+      onClick={() => onAbrir(pedido)}
+    >
+      <CardConteudo pedido={pedido} />
+    </div>
+  )
+}
+
+function KanbanColuna({
+  status,
+  label,
+  pedidos,
+  onAbrir,
+}: {
+  status: PedidoStatus
+  label: string
+  pedidos: Pedido[]
+  onAbrir: (p: Pedido) => void
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id: status })
+  return (
+    <div className="kanban-col">
+      <div className="kanban-col-head">
+        <span className="kanban-col-titulo">{label}</span>
+        <span className="kanban-col-count">{pedidos.length}</span>
+      </div>
+      <div
+        ref={setNodeRef}
+        className={isOver ? 'kanban-col-body kanban-col-body--over' : 'kanban-col-body'}
+      >
+        {pedidos.map((p) => (
+          <KanbanCard key={p.id} pedido={p} onAbrir={onAbrir} />
+        ))}
+        {pedidos.length === 0 && <div className="kanban-vazio">—</div>}
+      </div>
+    </div>
+  )
 }
 
 export default function PedidosPage() {
   const [pedidos, setPedidos] = useState<Pedido[]>([])
+  const [clientes, setClientes] = useState<Cliente[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [fStatus, setFStatus] = useState<PedidoStatus | ''>('')
+  const [fCliente, setFCliente] = useState('')
   const [detalhe, setDetalhe] = useState<Pedido | null>(null)
+  const [arrastando, setArrastando] = useState<Pedido | null>(null)
+
+  // Toque com delay distingue rolar (swipe) de arrastar (segurar + mover).
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
+  )
 
   async function carregar() {
-    setLoading(true)
     setError(null)
     try {
       setPedidos(await listPedidos())
@@ -33,12 +125,46 @@ export default function PedidosPage() {
 
   useEffect(() => {
     carregar()
+    listClientes()
+      .then(setClientes)
+      .catch(() => {})
   }, [])
 
-  const filtrados = useMemo(
-    () => (fStatus ? pedidos.filter((p) => p.status === fStatus) : pedidos),
-    [pedidos, fStatus],
+  const visiveis = useMemo(
+    () => (fCliente ? pedidos.filter((p) => p.cliente_id === fCliente) : pedidos),
+    [pedidos, fCliente],
   )
+
+  function handleDragStart(e: DragStartEvent) {
+    setArrastando(pedidos.find((p) => p.id === e.active.id) ?? null)
+  }
+
+  async function handleDragEnd(e: DragEndEvent) {
+    setArrastando(null)
+    const { active, over } = e
+    if (!over) return
+    const id = String(active.id)
+    const destino = over.id as PedidoStatus
+    const pedido = pedidos.find((p) => p.id === id)
+    if (!pedido || pedido.status === destino) return
+
+    const anterior = pedido.status
+    // Atualização otimista: move o card na hora.
+    setPedidos((ps) => ps.map((p) => (p.id === id ? { ...p, status: destino } : p)))
+
+    try {
+      await updateStatusPedido(id, destino)
+      // Releitura: ao entrar em "Entregue", o banco fixa o valor e o financeiro.
+      await carregar()
+    } catch (err) {
+      // Reverte e avisa.
+      setPedidos((ps) => ps.map((p) => (p.id === id ? { ...p, status: anterior } : p)))
+      alert(
+        'Não foi possível mover o pedido. ' +
+          (err instanceof Error ? err.message : ''),
+      )
+    }
+  }
 
   return (
     <section className="page">
@@ -47,15 +173,13 @@ export default function PedidosPage() {
       </div>
 
       <div className="filtros">
-        <select
-          value={fStatus}
-          onChange={(e) => setFStatus(e.target.value as PedidoStatus | '')}
-        >
-          <option value="">Todos os status</option>
-          <option value="rascunho">Rascunho</option>
-          <option value="confirmado">Confirmado</option>
-          <option value="entregue">Entregue</option>
-          <option value="cancelado">Cancelado</option>
+        <select value={fCliente} onChange={(e) => setFCliente(e.target.value)}>
+          <option value="">Todos os clientes</option>
+          {clientes.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.nome}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -67,50 +191,33 @@ export default function PedidosPage() {
 
       {error && !loading && <div className="form-error">{error}</div>}
 
-      {!loading && !error && filtrados.length === 0 && (
-        <div className="empty-state">
-          <p>Nenhum pedido encontrado.</p>
-          <span>
-            Pedidos são gerados ao aprovar um orçamento na tela de Orçamentos.
-          </span>
-        </div>
-      )}
+      {!loading && !error && (
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragCancel={() => setArrastando(null)}
+        >
+          <div className="kanban">
+            {COLUNAS.map((col) => (
+              <KanbanColuna
+                key={col.status}
+                status={col.status}
+                label={col.label}
+                pedidos={visiveis.filter((p) => p.status === col.status)}
+                onAbrir={setDetalhe}
+              />
+            ))}
+          </div>
 
-      {!loading && !error && filtrados.length > 0 && (
-        <ul className="cons-list">
-          {filtrados.map((p) => (
-            <li
-              key={p.id}
-              className="cons-card cons-card--click"
-              onClick={() => setDetalhe(p)}
-              title="Ver detalhe / financeiro"
-            >
-              <div className="cons-top">
-                <div>
-                  <h3 className="cons-parceiro">
-                    {p.numero ?? 'Pedido'}
-                    <span className="orc-cliente"> · {p.cliente?.nome ?? 'Cliente'}</span>
-                  </h3>
-                  <span className="cons-data">{dataBR(p.data)}</span>
-                </div>
-                <span className={statusClass[p.status]}>{STATUS_LABEL[p.status]}</span>
+          <DragOverlay>
+            {arrastando ? (
+              <div className="kanban-card kanban-card--overlay">
+                <CardConteudo pedido={arrastando} />
               </div>
-
-              <div className="cons-foot">
-                {p.financeiro ? (
-                  <span className="cons-total">
-                    Total <strong>{brl(p.financeiro.valor_total)}</strong>
-                    {p.financeiro.saldo_devedor > 0 && (
-                      <span className="ped-saldo"> · saldo {brl(p.financeiro.saldo_devedor)}</span>
-                    )}
-                  </span>
-                ) : (
-                  <span className="cons-total ped-rascunho-hint">Rascunho — a confirmar</span>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
       )}
 
       {detalhe && (

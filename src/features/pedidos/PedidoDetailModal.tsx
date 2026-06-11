@@ -1,20 +1,28 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import {
   addPagamento,
-  confirmarPedido,
   deletePagamento,
   getFinanceiro,
   listPagamentos,
+  updateStatusPedido,
 } from './api'
-import type { Financeiro, Pagamento, Pedido, SituacaoFinanceira } from './types'
+import type { Financeiro, Pagamento, Pedido, PedidoStatus, SituacaoFinanceira } from './types'
 import { FORMAS_PAGAMENTO, SITUACAO_LABEL, STATUS_LABEL } from './types'
 import { brl, dataBR, hojeISO } from '../../lib/format'
 
 interface Props {
   pedido: Pedido
   onClose: () => void
-  /** Chamado quando algo muda (confirmar/pagamento) para a lista recarregar. */
+  /** Recarrega o quadro após mudanças (pagamento, cancelamento). */
   onChange: () => void
+}
+
+const statusClass: Record<PedidoStatus, string> = {
+  orcamento_aprovado: 'badge badge--rascunho',
+  em_producao: 'badge badge--enviada',
+  entregue: 'badge badge--entregue',
+  concluido: 'badge badge--aprovado',
+  cancelado: 'badge badge--off',
 }
 
 const situacaoClass: Record<SituacaoFinanceira, string> = {
@@ -24,19 +32,17 @@ const situacaoClass: Record<SituacaoFinanceira, string> = {
 }
 
 export default function PedidoDetailModal({ pedido, onClose, onChange }: Props) {
+  const comFinanceiro = pedido.status === 'entregue' || pedido.status === 'concluido'
+
   const [financeiro, setFinanceiro] = useState<Financeiro | null>(pedido.financeiro)
   const [pagamentos, setPagamentos] = useState<Pagamento[]>([])
-  const [status, setStatus] = useState(pedido.status)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(comFinanceiro)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Form de pagamento
   const [valor, setValor] = useState('')
   const [data, setData] = useState(hojeISO())
   const [forma, setForma] = useState(FORMAS_PAGAMENTO[0])
-
-  const confirmado = status === 'confirmado' || status === 'entregue'
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -44,39 +50,25 @@ export default function PedidoDetailModal({ pedido, onClose, onChange }: Props) 
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
-  async function recarregar() {
+  async function recarregarFinanceiro() {
     const [fin, pgs] = await Promise.all([
       getFinanceiro(pedido.id),
-      confirmado ? listPagamentos(pedido.id) : Promise.resolve([]),
+      listPagamentos(pedido.id),
     ])
     setFinanceiro(fin)
     setPagamentos(pgs)
   }
 
   useEffect(() => {
+    if (!comFinanceiro) return
     setLoading(true)
-    recarregar()
+    recarregarFinanceiro()
       .catch((err) =>
-        setError(err instanceof Error ? err.message : 'Erro ao carregar o pedido.'),
+        setError(err instanceof Error ? err.message : 'Erro ao carregar o financeiro.'),
       )
       .finally(() => setLoading(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pedido.id, confirmado])
-
-  async function confirmar() {
-    if (!confirm('Confirmar o pedido? Isso baixa o estoque e fixa o valor total.')) return
-    setBusy(true)
-    setError(null)
-    try {
-      await confirmarPedido(pedido.id)
-      setStatus('confirmado')
-      onChange()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao confirmar.')
-    } finally {
-      setBusy(false)
-    }
-  }
+  }, [pedido.id, comFinanceiro])
 
   async function registrarPagamento(e: FormEvent) {
     e.preventDefault()
@@ -88,14 +80,9 @@ export default function PedidoDetailModal({ pedido, onClose, onChange }: Props) 
     setBusy(true)
     setError(null)
     try {
-      await addPagamento(pedido.id, {
-        valor: v,
-        data,
-        forma: forma || null,
-        observacao: null,
-      })
+      await addPagamento(pedido.id, { valor: v, data, forma: forma || null, observacao: null })
       setValor('')
-      await recarregar()
+      await recarregarFinanceiro()
       onChange()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao registrar pagamento.')
@@ -108,17 +95,25 @@ export default function PedidoDetailModal({ pedido, onClose, onChange }: Props) 
     if (!confirm('Remover este pagamento?')) return
     try {
       await deletePagamento(id)
-      await recarregar()
+      await recarregarFinanceiro()
       onChange()
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Erro ao remover.')
     }
   }
 
-  const totalItens = pedido.itens.reduce(
-    (acc, i) => acc + i.quantidade * i.preco_unitario,
-    0,
-  )
+  async function cancelarPedido() {
+    if (!confirm('Cancelar este pedido? Ele sairá do quadro.')) return
+    setBusy(true)
+    try {
+      await updateStatusPedido(pedido.id, 'cancelado')
+      onChange()
+      onClose()
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Erro ao cancelar.')
+      setBusy(false)
+    }
+  }
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -132,8 +127,8 @@ export default function PedidoDetailModal({ pedido, onClose, onChange }: Props) 
         <header className="drawer-header">
           <h2>
             {pedido.numero ?? 'Pedido'}
-            <span className={`badge ${'badge--' + (confirmado ? 'aprovado' : 'rascunho')} ped-status`}>
-              {STATUS_LABEL[status]}
+            <span className={`${statusClass[pedido.status]} ped-status`}>
+              {STATUS_LABEL[pedido.status]}
             </span>
           </h2>
           <button type="button" className="icon-btn" onClick={onClose} aria-label="Fechar">
@@ -150,11 +145,31 @@ export default function PedidoDetailModal({ pedido, onClose, onChange }: Props) 
             <div className="ped-data">{dataBR(pedido.data)}</div>
           </div>
 
+          {(pedido.orcamento?.numero || pedido.condicao_pagamento) && (
+            <div className="ped-meta-linhas">
+              {pedido.orcamento?.numero && (
+                <div>
+                  <span className="ped-meta-rotulo">Orçamento de origem:</span>{' '}
+                  {pedido.orcamento.numero}
+                </div>
+              )}
+              {pedido.condicao_pagamento && (
+                <div>
+                  <span className="ped-meta-rotulo">Condição de pagamento:</span>{' '}
+                  {pedido.condicao_pagamento}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Itens */}
-          <ul className="cons-itens ped-itens">
+          <ul className="cons-itens">
             {pedido.itens.map((i) => (
               <li key={i.id}>
-                <span className="ci-nome">{i.produto?.nome ?? 'Produto'}</span>
+                <span className="ci-nome">
+                  {i.produto?.nome ?? 'Produto'}
+                  {i.produto?.sku && <span className="doc-sku"> ({i.produto.sku})</span>}
+                </span>
                 <span className="ci-calc">
                   {i.quantidade} × {brl(i.preco_unitario)} = {brl(i.quantidade * i.preco_unitario)}
                 </span>
@@ -163,41 +178,28 @@ export default function PedidoDetailModal({ pedido, onClose, onChange }: Props) 
             {pedido.itens.length === 0 && <li className="ci-vazio">Sem itens</li>}
           </ul>
 
+          <div className="itens-total">
+            <span>Total</span>
+            <strong>{brl(pedido.total)}</strong>
+          </div>
+
+          {pedido.observacao && (
+            <div>
+              <div className="doc-bloco-titulo">Observação</div>
+              <p className="orc-condicoes">{pedido.observacao}</p>
+            </div>
+          )}
+
           {loading && (
             <div className="list-state">
               <div className="spinner" />
             </div>
           )}
 
-          {!loading && !confirmado && (
-            <>
-              <div className="itens-total">
-                <span>Total estimado</span>
-                <strong>{brl(totalItens)}</strong>
-              </div>
-              <p className="drawer-hint">
-                O pedido ainda é um rascunho. Confirme para baixar o estoque, fixar o
-                valor e habilitar os pagamentos.
-              </p>
-              <button
-                type="button"
-                className="btn-primary"
-                onClick={confirmar}
-                disabled={busy}
-              >
-                {busy ? 'Confirmando…' : 'Confirmar pedido'}
-              </button>
-            </>
-          )}
-
-          {/* Financeiro (pedido confirmado) */}
-          {!loading && confirmado && financeiro && (
+          {/* Financeiro (entregue / concluído) */}
+          {!loading && comFinanceiro && financeiro && (
             <>
               <div className="fin-grid">
-                <div className="fin-item">
-                  <span>Valor total</span>
-                  <strong>{brl(financeiro.valor_total)}</strong>
-                </div>
                 <div className="fin-item">
                   <span>Total pago</span>
                   <strong>{brl(financeiro.total_pago)}</strong>
@@ -216,7 +218,6 @@ export default function PedidoDetailModal({ pedido, onClose, onChange }: Props) 
                 </div>
               </div>
 
-              {/* Pagamentos */}
               <div className="ped-pagamentos">
                 <div className="doc-bloco-titulo">Pagamentos</div>
                 {pagamentos.length === 0 && (
@@ -262,11 +263,7 @@ export default function PedidoDetailModal({ pedido, onClose, onChange }: Props) 
                     </label>
                     <label className="field">
                       <span className="field-label">Data</span>
-                      <input
-                        type="date"
-                        value={data}
-                        onChange={(e) => setData(e.target.value)}
-                      />
+                      <input type="date" value={data} onChange={(e) => setData(e.target.value)} />
                     </label>
                   </div>
                   <label className="field">
@@ -288,6 +285,17 @@ export default function PedidoDetailModal({ pedido, onClose, onChange }: Props) 
           )}
 
           {error && <div className="form-error">{error}</div>}
+
+          <div className="drawer-footer">
+            <button
+              type="button"
+              className="btn-ghost btn-danger-ghost"
+              onClick={cancelarPedido}
+              disabled={busy}
+            >
+              Cancelar pedido
+            </button>
+          </div>
         </div>
       </div>
     </div>

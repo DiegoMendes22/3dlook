@@ -5,50 +5,59 @@ import type {
   Pagamento,
   PagamentoInput,
   Pedido,
+  PedidoStatus,
 } from './types'
-
-/** Pedidos confirmados com saldo devedor (> 0), com nome do cliente. */
-export async function listContasReceber(): Promise<ContaReceber[]> {
-  const { data, error } = await supabase
-    .from('v_contas_a_receber')
-    .select('*')
-    .order('data', { ascending: true })
-  if (error) throw error
-  return (data ?? []) as ContaReceber[]
-}
 
 const SELECT = `
   id, numero, cliente_id, orcamento_id, data, status, condicao_pagamento,
   valor_total, observacao, criado_em,
   cliente:clientes(nome),
+  orcamento:orcamentos(numero),
   itens:pedido_itens(
     id, produto_id, quantidade, preco_unitario,
     produto:produtos(nome, sku)
   )
 `
 
-/** Lista pedidos com cliente, itens e o resumo financeiro (quando confirmado). */
+/** Pedidos do quadro (exclui cancelados), com total (v_pedido_valor) e financeiro. */
 export async function listPedidos(): Promise<Pedido[]> {
   const { data, error } = await supabase
     .from('pedidos')
     .select(SELECT)
+    .neq('status', 'cancelado')
     .order('criado_em', { ascending: false })
   if (error) throw error
 
   const pedidos = (data ?? []) as unknown as Pedido[]
   if (pedidos.length === 0) return []
 
-  const { data: fin, error: errFin } = await supabase
-    .from('v_pedidos_financeiro')
-    .select('*')
-    .in(
-      'pedido_id',
-      pedidos.map((p) => p.id),
-    )
-  if (errFin) throw errFin
+  const ids = pedidos.map((p) => p.id)
+  const [valores, financeiros] = await Promise.all([
+    supabase.from('v_pedido_valor').select('pedido_id, total').in('pedido_id', ids),
+    supabase.from('v_pedidos_financeiro').select('*').in('pedido_id', ids),
+  ])
+  if (valores.error) throw valores.error
+  if (financeiros.error) throw financeiros.error
 
-  const mapa = new Map((fin ?? []).map((f) => [f.pedido_id, f as Financeiro]))
-  return pedidos.map((p) => ({ ...p, financeiro: mapa.get(p.id) ?? null }))
+  const totMap = new Map((valores.data ?? []).map((v) => [v.pedido_id, Number(v.total)]))
+  const finMap = new Map(
+    (financeiros.data ?? []).map((f) => [f.pedido_id, f as Financeiro]),
+  )
+
+  return pedidos.map((p) => ({
+    ...p,
+    total: totMap.get(p.id) ?? 0,
+    financeiro: finMap.get(p.id) ?? null,
+  }))
+}
+
+/** Atualiza apenas o status do pedido (sem RPC, sem mexer em estoque). */
+export async function updateStatusPedido(
+  id: string,
+  status: PedidoStatus,
+): Promise<void> {
+  const { error } = await supabase.from('pedidos').update({ status }).eq('id', id)
+  if (error) throw error
 }
 
 export async function getFinanceiro(pedidoId: string): Promise<Financeiro | null> {
@@ -59,12 +68,6 @@ export async function getFinanceiro(pedidoId: string): Promise<Financeiro | null
     .maybeSingle()
   if (error) throw error
   return (data as Financeiro) ?? null
-}
-
-/** Confirma o pedido (rascunho -> confirmado, baixa estoque, calcula total). */
-export async function confirmarPedido(id: string): Promise<void> {
-  const { error } = await supabase.rpc('confirmar_pedido', { p_pedido_id: id })
-  if (error) throw error
 }
 
 export async function listPagamentos(pedidoId: string): Promise<Pagamento[]> {
@@ -90,4 +93,14 @@ export async function addPagamento(
 export async function deletePagamento(id: string): Promise<void> {
   const { error } = await supabase.from('pagamentos').delete().eq('id', id)
   if (error) throw error
+}
+
+/** Pedidos confirmados com saldo devedor (> 0), com nome do cliente. */
+export async function listContasReceber(): Promise<ContaReceber[]> {
+  const { data, error } = await supabase
+    .from('v_contas_a_receber')
+    .select('*')
+    .order('data', { ascending: true })
+  if (error) throw error
+  return (data ?? []) as ContaReceber[]
 }
