@@ -7,6 +7,8 @@ import {
 } from './api'
 import type { Orcamento, OrcamentoStatus } from './types'
 import { STATUS_LABEL } from './types'
+import { listClientes } from '../clientes/api'
+import type { Cliente } from '../clientes/types'
 import OrcamentoFormModal from './OrcamentoFormModal'
 import OrcamentoDocModal from './OrcamentoDocModal'
 import { brl, dataBR, hojeISO } from '../../lib/format'
@@ -21,9 +23,10 @@ const statusClass: Record<OrcamentoStatus, string> = {
 
 export default function OrcamentosPage() {
   const [orcamentos, setOrcamentos] = useState<Orcamento[]>([])
+  const [clientes, setClientes] = useState<Cliente[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [fStatus, setFStatus] = useState<OrcamentoStatus | ''>('')
+  const [fCliente, setFCliente] = useState('')
 
   const [modalOpen, setModalOpen] = useState(false)
   const [editando, setEditando] = useState<Orcamento | null>(null)
@@ -46,6 +49,9 @@ export default function OrcamentosPage() {
 
   useEffect(() => {
     carregar()
+    listClientes()
+      .then(setClientes)
+      .catch(() => {})
   }, [])
 
   // Status "efetivo": enviado + validade vencida = expirado (apenas visual).
@@ -54,11 +60,11 @@ export default function OrcamentosPage() {
     return o.status
   }
 
+  // Sem cliente: só rascunhos. Com cliente: todos os status daquele cliente.
   const filtrados = useMemo(() => {
-    if (!fStatus) return orcamentos
-    return orcamentos.filter((o) => efetivo(o) === fStatus)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orcamentos, fStatus, hoje])
+    if (fCliente) return orcamentos.filter((o) => o.cliente_id === fCliente)
+    return orcamentos.filter((o) => o.status === 'rascunho')
+  }, [orcamentos, fCliente])
 
   async function mudarStatus(o: Orcamento, status: OrcamentoStatus, confirmar?: string) {
     if (confirmar && !confirm(confirmar)) return
@@ -112,16 +118,13 @@ export default function OrcamentosPage() {
       </div>
 
       <div className="filtros">
-        <select
-          value={fStatus}
-          onChange={(e) => setFStatus(e.target.value as OrcamentoStatus | '')}
-        >
-          <option value="">Todos os status</option>
-          <option value="rascunho">Rascunho</option>
-          <option value="enviado">Enviado</option>
-          <option value="aprovado">Aprovado</option>
-          <option value="recusado">Recusado</option>
-          <option value="expirado">Expirado</option>
+        <select value={fCliente} onChange={(e) => setFCliente(e.target.value)}>
+          <option value="">Rascunhos (todos os clientes)</option>
+          {clientes.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.nome}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -137,9 +140,9 @@ export default function OrcamentosPage() {
         <div className="empty-state">
           <p>Nenhum orçamento encontrado.</p>
           <span>
-            {fStatus
-              ? 'Ajuste o filtro ou crie um novo orçamento.'
-              : 'Clique em “Novo orçamento” para criar o primeiro.'}
+            {fCliente
+              ? 'Este cliente ainda não tem orçamentos.'
+              : 'Nenhum rascunho. Selecione um cliente para ver os demais status.'}
           </span>
         </div>
       )}
