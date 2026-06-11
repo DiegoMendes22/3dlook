@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from './auth/ProtectedRoute'
 import AppLayout from './components/AppLayout'
 import Login from './pages/Login'
+import PainelPage from './features/painel/PainelPage'
 import ProdutosPage from './features/produtos/ProdutosPage'
 import ParceirosPage from './features/parceiros/ParceirosPage'
 import ClientesPage from './features/clientes/ClientesPage'
@@ -21,7 +22,8 @@ export default function App() {
       {/* Rotas protegidas: sem sessão, ProtectedRoute redireciona ao login. */}
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
-          <Route index element={<Navigate to="/produtos" replace />} />
+          <Route index element={<Navigate to="/painel" replace />} />
+          <Route path="/painel" element={<PainelPage />} />
           <Route path="/produtos" element={<ProdutosPage />} />
           <Route path="/parceiros" element={<ParceirosPage />} />
           <Route path="/clientes" element={<ClientesPage />} />
