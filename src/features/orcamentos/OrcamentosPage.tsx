@@ -7,7 +7,7 @@ import {
 } from './api'
 import type { Orcamento, OrcamentoStatus } from './types'
 import { STATUS_LABEL } from './types'
-import NovoOrcamentoModal from './NovoOrcamentoModal'
+import OrcamentoFormModal from './OrcamentoFormModal'
 import OrcamentoDocModal from './OrcamentoDocModal'
 import { brl, dataBR, hojeISO } from '../../lib/format'
 
@@ -26,6 +26,7 @@ export default function OrcamentosPage() {
   const [fStatus, setFStatus] = useState<OrcamentoStatus | ''>('')
 
   const [modalOpen, setModalOpen] = useState(false)
+  const [editando, setEditando] = useState<Orcamento | null>(null)
   const [detalhe, setDetalhe] = useState<Orcamento | null>(null)
   const [mutando, setMutando] = useState<string | null>(null)
 
@@ -188,6 +189,18 @@ export default function OrcamentosPage() {
                   </span>
 
                   <div className="cons-actions">
+                    {(o.status === 'rascunho' || o.status === 'enviado') && (
+                      <button
+                        type="button"
+                        className="btn-ghost btn-sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setEditando(o)
+                        }}
+                      >
+                        Editar
+                      </button>
+                    )}
                     {o.status === 'rascunho' && (
                       <>
                         <button
@@ -248,7 +261,18 @@ export default function OrcamentosPage() {
       )}
 
       {modalOpen && (
-        <NovoOrcamentoModal onClose={() => setModalOpen(false)} onSaved={aoSalvar} />
+        <OrcamentoFormModal onClose={() => setModalOpen(false)} onSaved={aoSalvar} />
+      )}
+
+      {editando && (
+        <OrcamentoFormModal
+          orcamento={editando}
+          onClose={() => setEditando(null)}
+          onSaved={() => {
+            setEditando(null)
+            carregar()
+          }}
+        />
       )}
 
       {detalhe && (

@@ -62,6 +62,33 @@ export async function createOrcamento(
   return orc
 }
 
+interface EdicaoOrcamento {
+  cliente_id: string
+  validade: string | null
+  condicoes: string | null
+  observacao: string | null
+}
+
+/** Atualiza o cabeçalho do orçamento e substitui seus itens. */
+export async function updateOrcamento(
+  id: string,
+  header: EdicaoOrcamento,
+  itens: OrcamentoItemInput[],
+): Promise<void> {
+  const { error } = await supabase.from('orcamentos').update(header).eq('id', id)
+  if (error) throw error
+
+  const { error: errDel } = await supabase
+    .from('orcamento_itens')
+    .delete()
+    .eq('orcamento_id', id)
+  if (errDel) throw errDel
+
+  const rows = itens.map((i) => ({ ...i, orcamento_id: id }))
+  const { error: errIns } = await supabase.from('orcamento_itens').insert(rows)
+  if (errIns) throw errIns
+}
+
 export async function updateStatusOrcamento(
   id: string,
   status: OrcamentoStatus,
