@@ -17,7 +17,7 @@ import { COLUNAS, SITUACAO_LABEL } from './types'
 import { listClientes } from '../clientes/api'
 import type { Cliente } from '../clientes/types'
 import PedidoDetailModal from './PedidoDetailModal'
-import { brl } from '../../lib/format'
+import { brl, dataBR } from '../../lib/format'
 
 const situacaoClass: Record<SituacaoFinanceira, string> = {
   aberto: 'badge badge--recusado',
@@ -30,6 +30,11 @@ function CardConteudo({ pedido }: { pedido: Pedido }) {
     <>
       <div className="kanban-card-numero">{pedido.numero}</div>
       <div className="kanban-card-cliente">{pedido.cliente?.nome ?? '—'}</div>
+      {pedido.previsao_entrega && (
+        <div className="kanban-card-entrega">
+          Entrega: {dataBR(pedido.previsao_entrega)}
+        </div>
+      )}
       <div className="kanban-card-foot">
         <span className="kanban-card-total">{brl(pedido.total)}</span>
         {pedido.status === 'entregue' && pedido.financeiro && (

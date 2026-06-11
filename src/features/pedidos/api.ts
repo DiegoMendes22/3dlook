@@ -10,11 +10,11 @@ import type {
 
 const SELECT = `
   id, numero, cliente_id, orcamento_id, data, status, condicao_pagamento,
-  valor_total, observacao, criado_em,
+  valor_total, observacao, previsao_entrega, criado_em,
   cliente:clientes(nome),
   orcamento:orcamentos(numero),
   itens:pedido_itens(
-    id, produto_id, quantidade, preco_unitario,
+    id, produto_id, quantidade, preco_unitario, observacao,
     produto:produtos(nome, sku)
   )
 `
@@ -57,6 +57,18 @@ export async function updateStatusPedido(
   status: PedidoStatus,
 ): Promise<void> {
   const { error } = await supabase.from('pedidos').update({ status }).eq('id', id)
+  if (error) throw error
+}
+
+/** Define/atualiza a data de previsão de entrega do pedido. */
+export async function updatePrevisaoEntrega(
+  id: string,
+  previsao: string | null,
+): Promise<void> {
+  const { error } = await supabase
+    .from('pedidos')
+    .update({ previsao_entrega: previsao })
+    .eq('id', id)
   if (error) throw error
 }
 

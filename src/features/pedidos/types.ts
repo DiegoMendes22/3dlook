@@ -12,6 +12,7 @@ export interface PedidoItem {
   produto_id: string
   quantidade: number
   preco_unitario: number
+  observacao: string | null
   produto: { nome: string; sku: string | null } | null
 }
 
@@ -33,6 +34,7 @@ export interface Pedido {
   condicao_pagamento: string | null
   valor_total: number | null
   observacao: string | null
+  previsao_entrega: string | null
   criado_em: string
   cliente: { nome: string } | null
   orcamento: { numero: string | null } | null

@@ -4,6 +4,7 @@ import {
   deletePagamento,
   getFinanceiro,
   listPagamentos,
+  updatePrevisaoEntrega,
   updateStatusPedido,
 } from './api'
 import type { Financeiro, Pagamento, Pedido, PedidoStatus, SituacaoFinanceira } from './types'
@@ -43,6 +44,17 @@ export default function PedidoDetailModal({ pedido, onClose, onChange }: Props) 
   const [valor, setValor] = useState('')
   const [data, setData] = useState(hojeISO())
   const [forma, setForma] = useState(FORMAS_PAGAMENTO[0])
+  const [previsao, setPrevisao] = useState(pedido.previsao_entrega ?? '')
+
+  async function salvarPrevisao(valor: string) {
+    setPrevisao(valor)
+    try {
+      await updatePrevisaoEntrega(pedido.id, valor || null)
+      onChange()
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Erro ao salvar a previsão.')
+    }
+  }
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -162,17 +174,29 @@ export default function PedidoDetailModal({ pedido, onClose, onChange }: Props) 
             </div>
           )}
 
+          <label className="field">
+            <span className="field-label">Previsão de entrega</span>
+            <input
+              type="date"
+              value={previsao}
+              onChange={(e) => salvarPrevisao(e.target.value)}
+            />
+          </label>
+
           {/* Itens */}
-          <ul className="cons-itens">
+          <ul className="ped-itens-list">
             {pedido.itens.map((i) => (
-              <li key={i.id}>
-                <span className="ci-nome">
-                  {i.produto?.nome ?? 'Produto'}
-                  {i.produto?.sku && <span className="doc-sku"> ({i.produto.sku})</span>}
-                </span>
-                <span className="ci-calc">
-                  {i.quantidade} × {brl(i.preco_unitario)} = {brl(i.quantidade * i.preco_unitario)}
-                </span>
+              <li key={i.id} className="ped-item">
+                <div className="ped-item-top">
+                  <span className="ci-nome">
+                    {i.produto?.nome ?? 'Produto'}
+                    {i.produto?.sku && <span className="doc-sku"> ({i.produto.sku})</span>}
+                  </span>
+                  <span className="ci-calc">
+                    {i.quantidade} × {brl(i.preco_unitario)} = {brl(i.quantidade * i.preco_unitario)}
+                  </span>
+                </div>
+                {i.observacao && <div className="ped-item-obs">{i.observacao}</div>}
               </li>
             ))}
             {pedido.itens.length === 0 && <li className="ci-vazio">Sem itens</li>}
